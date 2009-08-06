@@ -254,4 +254,15 @@ describe 'EventsCalendar' do
 
   end
 
+  describe '<r:events:each:event:timezone>' do
+
+    it 'should return the event timezone' do
+      tag = %Q{<r:events for='#{Date.today.year}-07-04'><r:each><r:event:timezone /></r:each></r:events>}
+      expected = "UTC"
+
+      pages(:home).should render(tag).as(expected)
+    end
+
+  end
+
 end

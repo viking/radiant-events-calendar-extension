@@ -104,6 +104,14 @@ module EventsCalendarTags
   end
 
   desc %{
+    Renders the timezone for the current event.
+  }
+  tag 'event:timezone' do |tag|
+    event = tag.locals.event
+    event.timezone
+  end
+
+  desc %{
     Creates a calendar for the given month.
     If no date is given, the current month is used.
 
