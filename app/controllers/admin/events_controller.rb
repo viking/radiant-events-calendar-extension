@@ -26,7 +26,7 @@ class Admin::EventsController < Admin::ResourceController
   private
 
     def parse_time(str)
-      str.blank? ? str : Time.parse(str)
+      str.blank? ? str : Time.zone.parse(str)
     end
 
 end
