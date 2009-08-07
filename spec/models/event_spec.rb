@@ -11,10 +11,53 @@ describe Event do
                        :start_time => Date.today + 1.week + 8.hours,
                        :end_time => Date.today + 1.week + 17.hours,
                        :timezone => 'UTC')
+    @previous_time_zone = Radiant::Config['local.timezone']
+  end
+
+  after(:each) do
+    Radiant::Config['local.timezone'] = @previous_time_zone
   end
 
   it 'should be valid' do
     @event.should be_valid
+  end
+
+  context "timezones" do
+    it "should return the event's timezone" do
+      @event.timezone = 'Alaska'
+      @event.save
+      Event.find(@event.id).timezone.should == 'Alaska'
+    end
+
+    it "should set timezone to Radiant's timezone if none is specified" do
+      Radiant::Config['local.timezone'] = 'Alaska'
+      @event.timezone = nil
+      @event.save
+      @event.timezone.should == 'Alaska'
+    end
+
+    it "should set timezone to UTC if both the event's and Radiant's timezones are blank" do
+      Radiant::Config['local.timezone'] = nil
+      @event.timezone = nil
+      @event.save
+      @event.timezone.should == 'UTC'
+    end
+
+    it "should set start_time_utc" do
+      @event.timezone = 'Berlin'
+      @event.save
+
+      tz = ActiveSupport::TimeZone.new('Berlin')
+      @event.start_time_utc.should == tz.local_to_utc(@event.start_time)
+    end
+
+    it "should set end_time_utc" do
+      @event.timezone = 'Berlin'
+      @event.save
+
+      tz = ActiveSupport::TimeZone.new('Berlin')
+      @event.end_time_utc.should == tz.local_to_utc(@event.end_time)
+    end
   end
 
   context 'validations' do

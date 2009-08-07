@@ -10,14 +10,7 @@ class Event < ActiveRecord::Base
   named_scope :for_date, lambda {|date| { :conditions => [ 'date = ?', date ], :order => 'start_time, name' } }
   named_scope :for_month, lambda {|month, year| { :conditions => [ 'date BETWEEN ? AND ?', Date.civil(year,month,1), Date.civil(year,month,-1) ] } }
 
-  attr_accessor :timezone, :start_time, :end_time
-
   object_id_attr :filter, TextFilter
-
-  def timezone=(timezone)
-    @timezone = timezone
-    @tz = nil # invalidate @tz
-  end
 
   def time(options = {})
     return nil unless start_time.is_a?(Time)
@@ -65,28 +58,21 @@ class Event < ActiveRecord::Base
     end
 
     def after_initialize
-      @timezone = Radiant::Config['local.timezone'] || 'UTC'
       self.filter_id ||= Radiant::Config['defaults.page.filter'] if new_record?
     end
 
-    def after_find
-      @timezone   = read_attribute(:timezone)
-      @start_time = tz.utc_to_local(read_attribute(:start_time)) if read_attribute(:start_time)
-      @end_time   = tz.utc_to_local(read_attribute(:end_time)) if read_attribute(:end_time)
-    end
-
     def before_save
-      write_attribute(:timezone, @timezone)
-      write_attribute(:start_time, @start_time.is_a?(Time) ? tz.local_to_utc(@start_time) : nil)
-      write_attribute(:end_time, @end_time.is_a?(Time) ? tz.local_to_utc(@end_time) : nil)
+      if self.timezone.blank?
+        rtz = Radiant::Config['local.timezone']
+        self.timezone = rtz.blank? ? 'UTC' : rtz
+      end
+      tz = ActiveSupport::TimeZone.new(self.timezone)
+      self.start_time_utc   = tz.local_to_utc(self.start_time)  if self.start_time
+      self.end_time_utc     = tz.local_to_utc(self.end_time)    if self.end_time
       self.description_html = sanitize(filter.filter(description))
     end
 
   private
-
-    def tz
-      @tz ||= ActiveSupport::TimeZone.new(timezone) rescue Time.zone
-    end
 
     def filter
       filter_id.blank? ? SimpleFilter.new : TextFilter.descendants.find{|f| f.filter_name == filter_id}
@@ -96,7 +82,7 @@ class Event < ActiveRecord::Base
       include ERB::Util
       include ActionView::Helpers::TextHelper
       include ActionView::Helpers::TagHelper
-    
+
       def filter(content)
         simple_format(h(content))
       end
