@@ -104,7 +104,7 @@ describe 'EventsCalendar' do
 
     it 'should yield all events by default' do
       tag = %{<r:events><r:each><r:event:name/></r:each></r:events>}
-      expected = Event.all.collect(&:name).join
+      expected = Event.find(:all).collect(&:name).join
 
       pages(:home).should render(tag).as(expected)
     end

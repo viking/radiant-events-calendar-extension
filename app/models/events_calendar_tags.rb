@@ -151,19 +151,21 @@ module EventsCalendarTags
         end
       end
 
-      by = (attr[:by] || 'start_time').strip
+      by = (attr[:by] || Event.default_scoping.first[:find][:order]).split(/\s*,\s*/)
       order = (attr[:order] || 'asc').strip
-      order_string = ""
-      if Event.column_names.include?(by)
-        order_string << by
-      else
-        raise TagError.new("`by' attribute of `each' tag must be set to a valid field name")
+
+      # validate the by field
+      by.each do |column|
+        if !Event.column_names.include?(column)
+          raise TagError.new("`by' attribute of `each' tag must be set to a valid field name")
+        end
       end
-      if order =~ /^(asc|desc)$/i
-        order_string << " #{$1.upcase}"
-      else
+
+      if order !~ /^(asc|desc)$/i
         raise TagError.new(%{`order' attribute of `each' tag must be set to either "asc" or "desc"})
       end
+
+      order_string = by.collect { |col| "#{col} #{order}" }.join(", ")
       options[:order] = order_string
 
       if attr[:for]
