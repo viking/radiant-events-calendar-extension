@@ -2,13 +2,13 @@
 # require_dependency 'application'
 
 class EventsCalendarExtension < Radiant::Extension
-  version "0.3"
+  version "0.4"
   description "Adds a calendar of events to your Radiant site."
   url "http://github.com/davec/radiant-events-calendar-extension"
   
   define_routes do |map|
     map.namespace :admin, :member => { :remove => :get } do |admin|
-      admin.resources :events
+      admin.resources :events, :collection => { :auto_complete_for_event_category => :get }
     end
     map.events '/events/:year/:month/:day', :controller => 'events',
                                             :action => 'show',
