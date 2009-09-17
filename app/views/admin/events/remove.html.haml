@@ -8,9 +8,9 @@
       %td.event
         = image('events_calendar/event')
         = h @event.name
-                                              
+
 - form_for [:admin, @event], :html => { :method => :delete } do
   %p.buttons
-    %input.button{ :type => 'submit' :value => 'Delete Event' }/
+    %input.button{ :type => 'submit', :value => 'Delete Event' }/
     or
     = link_to('Cancel', admin_events_url)
