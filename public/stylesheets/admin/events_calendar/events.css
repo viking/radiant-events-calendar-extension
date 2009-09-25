@@ -78,3 +78,14 @@
   font-style: italic;
   text-decoration: line-through;
 }
+
+#content #event_form_area table.category_area {
+  width: 100%;
+}
+#content #event_form_area table.category_area td.col_1 {
+  width: 10em;
+}
+#content #event_form_area table.category_area input,
+#content #event_form_area table.category_area select {
+  width: 100%;
+}

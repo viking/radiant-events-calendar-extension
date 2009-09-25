@@ -28,11 +28,13 @@
         %label{:for => 'event_category'}
           Category
           %span.note (optional)
-        - unless categories.empty?
-          Select existing:
-          = f.select :category, categories, :include_blank => true
-          or add new:
-        = text_field_tag 'event[new_category]', nil, :id => 'event_new_category'
+        %table.category_area
+          %tr
+            %td.col_1 Select existing:
+            %td.col_2= f.select :category, categories, :include_blank => true
+          %tr
+            %td.col_1 Or add new:
+            %td.col_2= text_field_tag 'event[new_category]', nil, :id => 'event_new_category', :class => 'textbox'
       %p.title
         %label{:for => 'event_location'}
           Location
