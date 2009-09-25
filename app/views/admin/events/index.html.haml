@@ -16,6 +16,8 @@
         Time
       -#%th.location
         Location
+      %th.category
+        Category
       %th.modify
         Modify
   %tbody
@@ -35,6 +37,8 @@
             = h event.time
           -#%td.location
             = h event.location
+          %td.category
+            = h event.category
           %td.remove
             = link_to(image('remove', :alt => 'Remove event'), remove_admin_event_url(event))
 

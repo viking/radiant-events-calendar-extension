@@ -14,6 +14,8 @@ class Event < ActiveRecord::Base
 
   object_id_attr :filter, TextFilter
 
+  attr_accessor :new_category
+
   def time(options = {})
     return nil unless start_time.is_a?(Time)
 
@@ -72,6 +74,10 @@ class Event < ActiveRecord::Base
       self.start_time_utc   = tz.local_to_utc(self.start_time)  if self.start_time
       self.end_time_utc     = tz.local_to_utc(self.end_time)    if self.end_time
       self.description_html = sanitize(filter.filter(description))
+
+      if self.new_category.present?
+        self.category = self.new_category
+      end
     end
 
   private

@@ -28,7 +28,11 @@
         %label{:for => 'event_category'}
           Category
           %span.note (optional)
-        = text_field_with_auto_complete :event, :category, { :class => 'textbox', :maxlength => 255 }, { :method => :get, :min_chars => 1, :frequency => 0.5 }
+        - unless categories.empty?
+          Select existing:
+          = f.select :category, categories, :include_blank => true
+          or add new:
+        = text_field_tag 'event[new_category]', nil, :id => 'event_new_category'
       %p.title
         %label{:for => 'event_location'}
           Location
@@ -56,7 +60,7 @@
         .timezone
           %p.title
             %label{:for => 'event_timezone'} Timezone
-            = f.time_zone_select :timezone
+            = select_tag('event[timezone]', time_zone_options_for_select(@event.timezone || Radiant::Config['local.timezone']), :id => 'event_timezone')
       %p.title
         %label{:for => 'event_description'} Description
         ~ f.text_area 'description', :class => 'textbox', :size => '60x10'

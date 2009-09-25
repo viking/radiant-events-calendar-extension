@@ -1,4 +1,5 @@
 class Admin::EventsController < Admin::ResourceController
+  helper_method :categories
   before_filter :adjust_times, :only => [ :create, :update ]
   model_class Event
 
@@ -20,6 +21,21 @@ class Admin::EventsController < Admin::ResourceController
       # Order the events by date, and exclude any in the past
       self.models = model_class.all(:order => 'date, start_time, name',
                                     :conditions => [ 'date >= ?', Date.today ])
+    end
+
+    def categories
+      @categories ||= self.models.inject([]) do |arr, record|
+        category = record.category
+        if category.present?
+          (arr.length+1).times do |i|
+            if arr[i].nil? || category < arr[i]
+              arr.insert(i, category)
+              break
+            end
+          end
+        end
+        arr
+      end
     end
 
     def adjust_times
