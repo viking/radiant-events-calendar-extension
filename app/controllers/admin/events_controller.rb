@@ -24,18 +24,9 @@ class Admin::EventsController < Admin::ResourceController
     end
 
     def categories
-      @categories ||= self.models.inject([]) do |arr, record|
-        category = record.category
-        if category.present?
-          (arr.length+1).times do |i|
-            if arr[i].nil? || category < arr[i]
-              arr.insert(i, category)
-              break
-            end
-          end
-        end
-        arr
-      end
+      @categories ||= model_class.all({
+        :select => "DISTINCT category", :order => "category"
+      }).collect(&:category)
     end
 
     def adjust_times
