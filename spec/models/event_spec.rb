@@ -29,6 +29,24 @@ describe Event do
       Event.find(@event.id).timezone.should == 'Alaska'
     end
 
+    context "#start_time" do
+      it "should convert UTC back to local time" do
+        @event.timezone = 'Amsterdam'
+        @event.save
+
+        @event.start_time.utc_offset.should == 3600
+      end
+    end
+
+    context "#end_time" do
+      it "should convert UTC back to local time" do
+        @event.timezone = 'Amsterdam'
+        @event.save
+
+        @event.end_time.utc_offset.should == 3600
+      end
+    end
+
     it "should set timezone to Radiant's timezone if none is specified" do
       Radiant::Config['local.timezone'] = 'Alaska'
       @event.timezone = nil
@@ -41,22 +59,6 @@ describe Event do
       @event.timezone = nil
       @event.save
       @event.timezone.should == 'UTC'
-    end
-
-    it "should set start_time_utc" do
-      @event.timezone = 'Berlin'
-      @event.save
-
-      tz = ActiveSupport::TimeZone.new('Berlin')
-      @event.start_time_utc.should == tz.local_to_utc(@event.start_time)
-    end
-
-    it "should set end_time_utc" do
-      @event.timezone = 'Berlin'
-      @event.save
-
-      tz = ActiveSupport::TimeZone.new('Berlin')
-      @event.end_time_utc.should == tz.local_to_utc(@event.end_time)
     end
   end
 

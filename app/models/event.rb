@@ -49,6 +49,18 @@ class Event < ActiveRecord::Base
     end
   end
 
+  def start_time
+    if self['start_time'].is_a?(Time)
+      self['start_time'].in_time_zone(self['timezone'])
+    end
+  end
+
+  def end_time
+    if self['end_time'].is_a?(Time)
+      self['end_time'].in_time_zone(self['timezone'])
+    end
+  end
+
   protected
 
     def ensure_start_time_and_end_time_are_sane
@@ -70,9 +82,7 @@ class Event < ActiveRecord::Base
         rtz = Radiant::Config['local.timezone']
         self.timezone = rtz.blank? ? 'UTC' : rtz
       end
-      tz = ActiveSupport::TimeZone.new(self.timezone)
-      self.start_time_utc   = tz.local_to_utc(self.start_time)  if self.start_time
-      self.end_time_utc     = tz.local_to_utc(self.end_time)    if self.end_time
+
       self.description_html = sanitize(filter.filter(description))
 
       if self.new_category.present?
