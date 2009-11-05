@@ -23,6 +23,20 @@ module EventsCalendarTags
     tag.expand
   end
 
+  desc "Renders contents if there are no events"
+  tag 'events:if_none' do |tag|
+    if tag.locals.events.length == 0
+      tag.expand
+    end
+  end
+
+  desc "Renders contents if there are any events"
+  tag 'events:unless_none' do |tag|
+    if tag.locals.events.length > 0
+      tag.expand
+    end
+  end
+
   desc %{
     Loops through events.
   }

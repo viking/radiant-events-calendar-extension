@@ -155,6 +155,38 @@ describe 'EventsCalendar' do
     end
   end
 
+  describe '<r:events:if_none>' do
+    it "should generate no output if there are events" do
+      tag = %{<r:events for="2007-03-14"><r:if_none>None!</r:if_none></r:events>}
+      expected = "None!"
+
+      pages(:home).should render(tag).as(expected)
+    end
+
+    it "should generate no output if there are events" do
+      tag = %{<r:events for="today"><r:if_none>None!</r:if_none></r:events>}
+      expected = ""
+
+      pages(:home).should render(tag).as(expected)
+    end
+  end
+
+  describe '<r:events:unless_none>' do
+    it "should generate no output if there are no events" do
+      tag = %{<r:events for="2007-03-14"><r:unless_none>Some!</r:unless_none></r:events>}
+      expected = ""
+
+      pages(:home).should render(tag).as(expected)
+    end
+
+    it "should generate no output if there are events" do
+      tag = %{<r:events for="today"><r:unless_none>Some!</r:unless_none></r:events>}
+      expected = "Some!"
+
+      pages(:home).should render(tag).as(expected)
+    end
+  end
+
   describe '<r:events:each>' do
 
     it 'should generate no output' do
